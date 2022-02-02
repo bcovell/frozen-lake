@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    env: gym.Env = gym.make("FrozenLake-v1", is_slippery=False)
+    env: gym.Env = gym.make("FrozenLake-v1", is_slippery=True)
     env.render()
 
-    first_visit_mc(env, 100, .99)
+    first_visit_mc(env, 100000, .99)
 
 
 def first_visit_mc(env: gym.Env, num_episodes: int, discount: float):
@@ -15,7 +15,7 @@ def first_visit_mc(env: gym.Env, num_episodes: int, discount: float):
     q_table = np.zeros([env.observation_space.n, env.action_space.n])
     return_sums = np.zeros([env.observation_space.n, env.action_space.n])
     return_counts = np.zeros([env.observation_space.n, env.action_space.n])
-    last_10_rewards = [0] * 10
+    last_10_rewards = [0] * 100
     avg_rewards = []
     for ep_idx, epsilon in zip(range(num_episodes), exploration):
         states = []
@@ -47,9 +47,11 @@ def first_visit_mc(env: gym.Env, num_episodes: int, discount: float):
                 q_table[s, a] = return_sums[s, a] / return_counts[s, a]
                 visited_state_actions.append((s, a))
     plt.plot(np.arange(0, num_episodes), avg_rewards)
+    plt.title('first visit monte carlo for stochastic 4x4 frozen lake')
     plt.xlabel('episodes')
     plt.ylabel('average reward')
     plt.show()
+    print(q_table)
 
 
 if __name__ == '__main__':
