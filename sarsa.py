@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    env: gym.Env = gym.make("FrozenLake-v1", is_slippery=False)
+    env: gym.Env = gym.make("FrozenLake-v1", is_slippery=True)
     env.render()
 
-    sarsa(env, 10000, .99, .1)
+    sarsa(env, 10000, .99, .05)
 
 
 def sarsa(env: gym.Env, num_episodes: int, discount: float, alpha: float):
@@ -34,7 +34,6 @@ def sarsa(env: gym.Env, num_episodes: int, discount: float, alpha: float):
                 break
 
         rewards.append(reward)
-        # if reward == 1:  # we won so decrease epsilon
         epsilon -= 1 / num_episodes
 
     filtered = np.mean(window(rewards, int(num_episodes / 100)), axis=1)
