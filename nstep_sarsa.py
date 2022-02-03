@@ -8,7 +8,7 @@ if __name__ == '__main__':
     epsilon = 1  # exploration
     gamma = .99  # discount
     alpha = .05  # learning rate
-    n = 5  # number of steps for look back
+    n = 3  # number of steps for look back
     q_table = np.zeros([env.observation_space.n, env.action_space.n])
 
 
@@ -39,8 +39,8 @@ if __name__ == '__main__':
             tao = t - n + 1
             if tao >= 0:
                 discounted_reward = sum(
-                    [gamma ** (i - tao - 1) * rewards[i] for i in
-                     range(tao + 1, min(tao + n, t_final))]
+                    [gamma ** (i - tao) * rewards[i] for i in
+                     range(tao, min(tao + n, t_final))]
                 )
                 if tao + n < t_final:
                     discounted_reward += gamma ** n * q_table[states[tao + n], actions[tao + n]]
@@ -49,14 +49,14 @@ if __name__ == '__main__':
             if tao == t_final - 1:
                 break
 
-        final_rewards.append(reward)
-        epsilon -= 2 / num_episodes
+        final_rewards.append(rewards[-1])
+        epsilon -= 1 / num_episodes
         epsilon = max(epsilon, 0)
 
     filtered = np.mean(window(final_rewards, int(num_episodes / 100)), axis=1)
     filtered = np.pad(filtered, [num_episodes - len(filtered), 0])
     plt.plot(range(num_episodes), filtered)
-    plt.title('n-step sarsa for 4x4 frozen lake')
+    plt.title(f'{n}-step sarsa for 4x4 frozen lake')
     plt.xlabel('episodes')
     plt.ylabel('reward')
     plt.show()
